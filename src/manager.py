@@ -39,16 +39,18 @@ def searchAccount():
     for item in password_list:
         print(f"Account: {item[0]}")
         print(f"Password: {item[1]}")
+        print("-----"*10)
 
 
 
 def runLoop():
-    print("Welcome!  Please enter name to continue.")
     print("If adding a new account, please type \"ADD\"")
     print("If searching for a password, please type \"FIND\"")
+    print("To exit, please type \"EXIT\"")
     action = input()
     try:
         cleanedAction = "".join(filter(str.isalnum, action)) # Maybe change this to regex?  Might be faster and I can give input if they're doing something bad
+        cleanedAction = cleanedAction.upper()
     except ValueError as e:
         print(e)
         print("Please relaunch and do something normal.")
@@ -58,11 +60,15 @@ def runLoop():
             createAccount()
         elif cleanedAction == "FIND":
             searchAccount()
+        elif cleanedAction == "EXIT":
+            print("Goodbye!")
+            quit()
         else:
             # TODO 
             # List all names of tables that are accessable.
             # Implement private public key for access of each table.
             pass
+        runLoop()
 
 def invalidCharacter(error_step):
     '''Gives error message for invalid character, argument should be text to let user know where they put the error'''
@@ -70,9 +76,8 @@ def invalidCharacter(error_step):
 
 def storePasswords(user, name, password):
     # decode the byte type to be writable in a text file
-    decoded_pass = password
-    createItem(user, name, decoded_pass)
+    createItem(user, name, password)
     
 if __name__ == "__main__":
-    # runLoop()
+    print("Welcome!  Please enter name to continue.")
     runLoop()

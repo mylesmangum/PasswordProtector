@@ -47,7 +47,7 @@ def searchTable(user):
         print("There seems to be an issue with the user you're trying to access.")
     finally:
         connection_obj.close()
-        print(data_items)
+        # print(data_items)
         return data_items
 
 
@@ -66,5 +66,5 @@ def searchAccounts(user):
         print(e)
     finally:
         connection_obj.close()
-        print(data_items)
+        # print(data_items)
         return data_items
