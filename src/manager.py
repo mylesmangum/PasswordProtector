@@ -2,6 +2,8 @@ from ast import literal_eval
 # from encrypt_string import symEncrypt, symDecrypt
 import re
 from database_interface import createDatabase, createItem, searchTable
+from pass_encryption import encryptPassword, decryptPassword, checkPassword
+
 name_characters = "[^a-zA-Z0-9]"
 def createAccount():
     user_name = ""
@@ -14,7 +16,12 @@ def createAccount():
     if scrubbed_name == account_name:
         print(f"Please input a password for {scrubbed_name}'s account: ")
         raw_pass = input()
-        storePasswords(user_name, scrubbed_name, raw_pass)
+        encrypted_pass = encryptPassword(raw_pass)
+        if(not checkPassword(raw_pass)):
+            print("The password you have chosen is too common, please choose a different password.")
+            createAccount()
+            return
+        storePasswords(user_name, scrubbed_name, encrypted_pass)
     else:
         invalidCharacter("name creation")
         createAccount()
