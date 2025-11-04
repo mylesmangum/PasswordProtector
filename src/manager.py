@@ -2,7 +2,7 @@ from ast import literal_eval
 # from encrypt_string import symEncrypt, symDecrypt
 import re
 from database_interface import createDatabase, createItem, searchTable
-from pass_encryption import encryptPassword, decryptPassword, checkPassword
+from pass_encryption import encryptPassword, decryptPassword, checkPassword, createStrongPassword
 
 name_characters = "[^a-zA-Z0-9]"
 def createAccount():
@@ -17,10 +17,11 @@ def createAccount():
         print(f"Please input a password for {scrubbed_name}'s account: ")
         raw_pass = input()
         encrypted_pass = encryptPassword(raw_pass)
-        if(not checkPassword(raw_pass)):
+        while not checkPassword(raw_pass):
             print("The password you have chosen is too common, please choose a different password.")
-            createAccount()
-            return
+            raw_pass = input()
+        while not createStrongPassword(raw_pass):
+            raw_pass = input()
         storePasswords(user_name, scrubbed_name, encrypted_pass)
     else:
         invalidCharacter("name creation")

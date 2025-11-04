@@ -13,5 +13,20 @@ def checkPassword(raw_password):
         return False
     return True
 
-def createStrongPassword(length=12):
-    return "soStrong!!!!"
+def createStrongPassword(password):
+    hasSpecialCharacter = False
+    for char in password:
+        if not (char.isdigit() or char.isalnum()):
+            hasSpecialCharacter = True
+            break
+
+    if not any(char.isdigit() for char in password):
+        print("It's recommended you have at least one number in your password")
+        return False
+    elif len(password) <= 7:
+        print("It's recommended you have a password greater than 7 characters")
+        return False
+    elif not hasSpecialCharacter:
+        print("It's recommended you have at least one special character in your password")
+    else:
+        return True
