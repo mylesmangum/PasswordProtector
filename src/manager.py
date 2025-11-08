@@ -46,7 +46,7 @@ def searchAccount():
         runLoop()
     for item in password_list:
         print(f"Account: {item[0]}")
-        print(f"Password: {item[1]}")
+        print(f"Password: {decryptPassword(item[1])}")
         print("-----"*10)
 
 
@@ -87,5 +87,6 @@ def storePasswords(user, name, password):
     createItem(user, name, password)
     
 if __name__ == "__main__":
+
     print("Welcome!  Please enter name to continue.")
     runLoop()

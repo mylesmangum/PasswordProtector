@@ -1,12 +1,25 @@
+import os
+from algorithm import RSA, encrypt_RSA, decrypt_RSA
+RSA_PRIV_KEY = 0
+RSA_PUB_KEY = 0
 def encryptPassword(raw_password):
+    try:
+        privKey = os.environ["RSA_PRIV_KEY"]
+        pubKey = os.environ["RSA_PUB_KEY"]
+    except:
+        print("Building new keys...")
+        RSA_PUB_KEY, RSA_PRIV_KEY = RSA(23, 41)
+        os.environ["RSA_PRIV_KEY"] = str(RSA_PRIV_KEY)
+        os.environ["RSA_PUB_KEY"] = str(RSA_PUB_KEY)
+    raw_password = encrypt_RSA(raw_password, RSA_PUB_KEY[0], RSA_PUB_KEY[1])
     # Placeholder for actual encryption logic
-    return f"encrypted({raw_password})"
+    return raw_password
 
 def decryptPassword(encrypted_password):
     # Placeholder for actual decryption logic
-    if encrypted_password.startswith("encrypted(") and encrypted_password.endswith(")"):
-        return encrypted_password[len("encrypted("):-1]
-    return encrypted_password
+    RSA_PUB_KEY, RSA_PRIV_KEY = RSA(23, 41)
+    decrypted = decrypt_RSA(list(encrypted_password), RSA_PRIV_KEY[0], RSA_PRIV_KEY[1])
+    return decrypted
 
 def checkPassword(raw_password):
     if raw_password == "password123":
