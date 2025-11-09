@@ -16,12 +16,12 @@ def createAccount():
     if scrubbed_name == account_name:
         print(f"Please input a password for {scrubbed_name}'s account: ")
         raw_pass = input()
-        encrypted_pass = encryptPassword(raw_pass)
         while not checkPassword(raw_pass):
             print("The password you have chosen is too common, please choose a different password.")
             raw_pass = input()
         while not createStrongPassword(raw_pass):
             raw_pass = input()
+        encrypted_pass = encryptPassword(raw_pass)
         storePasswords(user_name, scrubbed_name, encrypted_pass)
     else:
         invalidCharacter("name creation")
