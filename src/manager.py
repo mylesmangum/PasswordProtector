@@ -87,6 +87,5 @@ def storePasswords(user, name, password):
     createItem(user, name, password)
     
 if __name__ == "__main__":
-
     print("Welcome!  Please enter name to continue.")
     runLoop()

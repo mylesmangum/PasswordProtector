@@ -42,5 +42,3 @@ def decrypt_RSA(value, d, n):
 
 # print("Encrypted value: ", encrypted)
 # print("Decrypted with private key to: ", decrypt_RSA(encrypted, private[0], private[1]))
-
-print(encrypt_RSA("apple", 71, 40))
