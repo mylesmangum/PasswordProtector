@@ -3,6 +3,7 @@ from ast import literal_eval
 import re
 import os
 from dotenv import load_dotenv
+from argon2 import PasswordHasher
 from database_interface import createDatabase, createItem, searchTable
 from pass_encryption import encryptPassword, decryptPassword, checkPassword, createStrongPassword
 
@@ -59,7 +60,10 @@ def runLoop():
     else:
         print("Enter the developer password if you are a developer, else just press enter: ")
         dev_password = input()
-        if dev_password == decryptPassword(os.getenv("DEVELOPER_PASSWORD")):
+        hash = os.getenv("DEVELOPER_PASSWORD")
+        print(hash)
+        print(PasswordHasher().verify(hash, dev_password))
+        if dev_password == PasswordHasher().hash(os.getenv("DEVELOPER_PASSWORD")):
             print("You are in developer mode")
             
     print("If adding a new account, please type \"ADD\"")
@@ -99,7 +103,7 @@ def storePasswords(user, name, password, developer_mode=False):
     else:
         print("stored!")
         with open(".env", "w", encoding="utf-8") as env_file:
-            env_file.write(f"DEVELOPER_PASSWORD={password}\n")        
+            env_file.write(f"DEVELOPER_PASSWORD=\"{password}\"\n")        
 
 def createMasterPassword():
     print("Please put in a master password for develper mode: ")
@@ -109,7 +113,7 @@ def createMasterPassword():
         raw_pass = input()
     while not createStrongPassword(raw_pass):
         raw_pass = input()
-    encrypted_pass = encryptPassword(raw_pass)
+    encrypted_pass = PasswordHasher().hash(raw_pass)
     storePasswords("developer", "master_password", encrypted_pass, developer_mode=True)
 
     
