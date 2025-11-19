@@ -3,6 +3,7 @@ from ast import literal_eval
 import re
 import os
 from dotenv import load_dotenv
+from argon2 import PasswordHasher
 from database_interface import createDatabase, createItem, searchTable
 from pass_encryption import encryptPassword, decryptPassword, checkPassword, createStrongPassword
 
@@ -105,7 +106,7 @@ def createMasterPassword():
         raw_pass = input()
     while not createStrongPassword(raw_pass):
         raw_pass = input()
-    encrypted_pass = encryptPassword(raw_pass)
+    encrypted_pass = PasswordHasher().hash(raw_pass)
     storePasswords("developer", "master_password", encrypted_pass, developer_mode=True)
 
     
