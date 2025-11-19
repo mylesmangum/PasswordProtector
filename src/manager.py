@@ -1,6 +1,9 @@
 from ast import literal_eval
 # from encrypt_string import symEncrypt, symDecrypt
 import re
+import os
+from dotenv import load_dotenv
+from argon2 import PasswordHasher
 from database_interface import createDatabase, createItem, searchTable
 from pass_encryption import encryptPassword, decryptPassword, checkPassword, createStrongPassword
 
@@ -43,7 +46,7 @@ def searchAccount():
     password_list = searchTable(user_name)
     if password_list == []:
         print(f"It seems there's something wrong with the input of user {user_name}, please check the spelling or if there are any passwords saved for {user_name}")
-        runLoop()
+        runLoop("developer")
     for item in password_list:
         print(f"Account: {item[0]}")
         print(f"Password: {decryptPassword(item[1])}")
@@ -51,9 +54,9 @@ def searchAccount():
 
 
 
-def runLoop():
+def runLoop(mode):
     print("If adding a new account, please type \"ADD\"")
-    print("If searching for a password, please type \"FIND\"")
+    print("If searching for a password, please type \"FIND\" (only for developers)")
     print("To exit, please type \"EXIT\"")
     action = input()
     try:
@@ -67,6 +70,10 @@ def runLoop():
         if cleanedAction == "ADD":
             createAccount()
         elif cleanedAction == "FIND":
+            if mode != "developer":
+                print("You are not a developer.\n")
+                runLoop(mode)
+                return
             searchAccount()
         elif cleanedAction == "EXIT":
             print("Goodbye!")
@@ -76,16 +83,47 @@ def runLoop():
             # List all names of tables that are accessable.
             # Implement private public key for access of each table.
             pass
-        runLoop()
+        runLoop(mode)
 
 def invalidCharacter(error_step):
     '''Gives error message for invalid character, argument should be text to let user know where they put the error'''
     print(f"It seems that you used an invalid character during {error_step}, please try again")
 
-def storePasswords(user, name, password):
+def storePasswords(user, name, password, developer_mode=False):
     # decode the byte type to be writable in a text file
-    createItem(user, name, password)
+    if not developer_mode:
+        createItem(user, name, password)
+    else:
+        print("stored!")
+        with open("../.env", "w", encoding="utf-8") as env_file:
+            env_file.write(f"DEVELOPER_PASSWORD={password}\n")        
+
+def createMasterPassword():
+    print("Please create a master password for developer mode: ")
+    raw_pass = input()
+    while not checkPassword(raw_pass):
+        print("The password you have chosen is too common, please choose a different password.")
+        raw_pass = input()
+    while not createStrongPassword(raw_pass):
+        raw_pass = input()
+    encrypted_pass = PasswordHasher().hash(raw_pass)
+    storePasswords("developer", "master_password", encrypted_pass, developer_mode=True)
+
     
 if __name__ == "__main__":
-    print("Welcome!  Please enter name to continue.")
-    runLoop()
+    load_dotenv()
+    mode = "user"
+    if not os.getenv("DEVELOPER_PASSWORD"):
+        createMasterPassword()
+    else:
+        print("Enter the developer password if you are a developer, else just press enter: ")
+        dev_password = input()
+        if dev_password == decryptPassword(os.getenv("DEVELOPER_PASSWORD")):
+            print("Do you want to reset the password? (y/n): ")
+            reset_choice = input().lower()
+            if reset_choice == 'y':
+                createMasterPassword()
+            print("You are in developer mode")
+            mode = "developer"
+    print("Welcome!")
+    runLoop(mode)
