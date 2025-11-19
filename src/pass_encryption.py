@@ -3,12 +3,13 @@ from algorithm import RSA, encrypt_RSA, decrypt_RSA
 from cryptography.hazmat.primitives.ciphers import (
     Cipher, algorithms, modes
 )
-import bcrypt
 from dotenv import load_dotenv
 RSA_PRIV_KEY = 0
 RSA_PUB_KEY = 0
+key = b'2^\x9eb}\t\x13\xab,_\xd4\xfa\x0c)]\x95'
 def encryptPassword(raw_password, associated_data=b""):
-    key = os.urandom(16)
+    # Initialization vector should be unique per encryption,
+    # but it does not need to be secret.
     iv = os.urandom(12)
 
     # Construct an AES-GCM Cipher object with the given key and a
@@ -26,9 +27,9 @@ def encryptPassword(raw_password, associated_data=b""):
     # GCM does not require padding.
     ciphertext = encryptor.update(raw_password) + encryptor.finalize()
     print(ciphertext)
-    return (iv, ciphertext, encryptor.tag, key)
+    return (iv, ciphertext, encryptor.tag)
 
-def decryptPassword(key, associated_data, iv, encrypted_password, tag):
+def decryptPassword(associated_data, iv, encrypted_password, tag):
     decryptor = Cipher(
         algorithms.AES(key),
         modes.GCM(iv, tag),
@@ -65,7 +66,11 @@ def createStrongPassword(password):
     else:
         return True
     
-iv, ciphertext, tag, key = encryptPassword("Hello", b"MySecretPassword", b"authenticated but unencrypted data")
-print(decryptPassword(key, b"authenticated but unencrypted data", iv, ciphertext, tag))
-load_dotenv()
-print(os.getenv("DEVELOPER_PASSWORD"))
+# iv, ciphertext, tag = encryptPassword(b"mysecretpassword", b"authenticated but unencrypted data")
+# print("Ciphertext:", ciphertext)
+# print("Tag:", tag)
+# iv = b'\x0eAT!\xadg\xdc\xa6K\xd9\xa7T'
+# associated_data = b''
+# tag = b'\xf0*\xc9r`\x9e\xee\x8b\xfd\xcf\x1d\xaddl\xfa\xcb'
+# plaintext = decryptPassword(associated_data, iv, b'\\x146\\xecB\\x8b\\x02\\xd1_', tag)
+# print("Plaintext:", plaintext)

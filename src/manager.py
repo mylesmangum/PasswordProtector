@@ -6,7 +6,10 @@ from dotenv import load_dotenv
 from argon2 import PasswordHasher
 from database_interface import createDatabase, createItem, searchTable
 from pass_encryption import encryptPassword, decryptPassword, checkPassword, createStrongPassword
-
+iv = b'6\xc3"\x15\xd8\x16\x80H\xb7\xd6K!'
+associated_data = b''
+tag = b'\xaa\xa0\x85\xce\xd5[O\xf2\x14m\x8fO\x19\n\x9c\x0b'
+placeholder = b'\xa02\xbd\x12>\xe3\x92\xe5'
 name_characters = "[^a-zA-Z0-9]"
 def createAccount():
     user_name = ""
@@ -24,8 +27,10 @@ def createAccount():
             raw_pass = input()
         while not createStrongPassword(raw_pass):
             raw_pass = input()
-        encrypted_pass = encryptPassword(raw_pass)
-        storePasswords(user_name, scrubbed_name, encrypted_pass)
+        iv, encrypted_pass, tag = encryptPassword(raw_pass.encode('utf-8'), associated_data)
+        print("Iv: ", iv)
+        print("Tag: ", tag)
+        storePasswords(user_name, scrubbed_name, encrypted_pass, iv, tag)
     else:
         invalidCharacter("name creation")
         createAccount()
@@ -49,7 +54,9 @@ def searchAccount():
         runLoop("developer")
     for item in password_list:
         print(f"Account: {item[0]}")
-        print(f"Password: {decryptPassword(item[1])}")
+        print(f"encrypted Password: {item[1]}")
+        print(type(item[1]))
+        print(f"Password: {decryptPassword(associated_data, item[2], item[1], item[3])}")
         print("-----"*10)
 
 
@@ -89,13 +96,13 @@ def invalidCharacter(error_step):
     '''Gives error message for invalid character, argument should be text to let user know where they put the error'''
     print(f"It seems that you used an invalid character during {error_step}, please try again")
 
-def storePasswords(user, name, password, developer_mode=False):
+def storePasswords(user, name, password, iv="", tag="", developer_mode=False):
     # decode the byte type to be writable in a text file
     if not developer_mode:
-        createItem(user, name, password)
+        createItem(user, name, password, iv, tag)
     else:
         print("stored!")
-        with open("../.env", "w", encoding="utf-8") as env_file:
+        with open(".env", "w", encoding="utf-8") as env_file:
             env_file.write(f"DEVELOPER_PASSWORD={password}\n")        
 
 def createMasterPassword():
@@ -113,17 +120,22 @@ def createMasterPassword():
 if __name__ == "__main__":
     load_dotenv()
     mode = "user"
+    print(os.getenv("DEVELOPER_PASSWORD"))
     if not os.getenv("DEVELOPER_PASSWORD"):
         createMasterPassword()
     else:
         print("Enter the developer password if you are a developer, else just press enter: ")
-        dev_password = input()
-        if dev_password == decryptPassword(os.getenv("DEVELOPER_PASSWORD")):
+        try:
+            dev_password = input()
+            hashed_password = os.getenv("DEVELOPER_PASSWORD")
+            PasswordHasher().verify(hashed_password, dev_password)
             print("Do you want to reset the password? (y/n): ")
             reset_choice = input().lower()
             if reset_choice == 'y':
                 createMasterPassword()
             print("You are in developer mode")
             mode = "developer"
+        except Exception as e:
+            print("Password incorrect... Continuing in user mode.")
     print("Welcome!")
     runLoop(mode)

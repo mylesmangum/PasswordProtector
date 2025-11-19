@@ -3,3 +3,5 @@ src/__pycache__
 .env
 src/.env
 
+src/.DS_Store
+.DS_Store

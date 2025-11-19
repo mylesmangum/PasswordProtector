@@ -1,4 +1,5 @@
 import sqlite3
+
 # from encrypt_string import symEncrypt
 def createDatabase(user):
     database_name = "passwords.db"
@@ -6,27 +7,30 @@ def createDatabase(user):
     new_table = f"""
                 CREATE TABLE IF NOT EXISTS {user} (
                 Username VARCHAR(50) NOT NULL,
-                Password VARCHAR(255) NOT NULL
+                Password BLOB NOT NULL,
+                IV BLOB,
+                Tag BLOB
                 );
                 """
     connection_obj.execute(new_table)
     connection_obj.commit()
     connection_obj.close()
 
-def createItem(user, name, password):
+def createItem(user, name, password, iv, tag):
     database_name = "passwords.db"
     connection_obj = sqlite3.connect(database_name)
     cursor_obj = connection_obj.cursor()
     my_pass = password
+    print("Password type:", my_pass)
     try:
         new_item = f"""
-                    INSERT INTO {user} (Username, Password) VALUES ("{name}", "{my_pass}")
+                    INSERT INTO {user} (Username, Password, IV, Tag) VALUES ("{name}", ?, ?, ?)
                     """
-        cursor_obj.execute(new_item)
+        cursor_obj.execute(new_item, (my_pass, iv, tag))
         print("success!")
         connection_obj.commit()
-    except:
-        print("There seems to be an issue with the user you're trying to access.")
+    except Exception as e:
+        print("There seems to be an issue with the user you're trying to access.", e)
     finally:
         print(f"Storing {name}\'s password: {password}")
         connection_obj.commit()
@@ -39,12 +43,15 @@ def searchTable(user):
     data_items = []
     try:
         print("Here's the data")
+        connection_obj.text_factory(bytes)
         cursor_obj.execute(f"""SELECT * FROM {user}""")
         output = cursor_obj.fetchall()
         for row in output:
+            print(row[1])
+            print(type(row[1]))
             data_items.append(row)
-    except:
-        print("There seems to be an issue with the user you're trying to access.")
+    except Exception as e:
+        print("There seems to be an issue with the user you're trying to access.", e)
     finally:
         connection_obj.close()
         # print(data_items)
