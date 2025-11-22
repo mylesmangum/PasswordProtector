@@ -2,6 +2,7 @@ from ast import literal_eval
 # from encrypt_string import symEncrypt, symDecrypt
 import re
 import os
+import sys
 import readline
 from dotenv import load_dotenv
 from argon2 import PasswordHasher
@@ -96,7 +97,7 @@ def runLoop(mode):
             searchAccount()
         elif cleanedAction == "EXIT":
             print("Goodbye!")
-            quit()
+            sys.exit()
         else:
             # TODO 
             # List all names of tables that are accessable.

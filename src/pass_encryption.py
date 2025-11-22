@@ -1,4 +1,6 @@
 import os
+import random
+import math
 from algorithm import RSA, encrypt_RSA, decrypt_RSA
 from cryptography.hazmat.primitives.ciphers import (
     Cipher, algorithms, modes
@@ -67,11 +69,11 @@ def createStrongPassword(password):
     else:
         return True
     
-# iv, ciphertext, tag = encryptPassword(b"mysecretpassword", b"authenticated but unencrypted data")
-# print("Ciphertext:", ciphertext)
-# print("Tag:", tag)
-# iv = b'\x0eAT!\xadg\xdc\xa6K\xd9\xa7T'
-# associated_data = b''
-# tag = b'\xf0*\xc9r`\x9e\xee\x8b\xfd\xcf\x1d\xaddl\xfa\xcb'
-# plaintext = decryptPassword(associated_data, iv, b'\\x146\\xecB\\x8b\\x02\\xd1_', tag)
-# print("Plaintext:", plaintext)
+def suggestPassword():
+    acceptable_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[{]}\|;:,<.>/?`~"
+    password= ""
+    for i in range(12):
+        index = math.floor(random.random() * len(acceptable_chars))
+        password += acceptable_chars[index]
+    print("Generated password: [", password, "]")
+    return password
