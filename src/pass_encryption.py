@@ -63,6 +63,7 @@ def createStrongPassword(password):
         return False
     elif not hasSpecialCharacter:
         print("It's recommended you have at least one special character in your password")
+        return False
     else:
         return True
     

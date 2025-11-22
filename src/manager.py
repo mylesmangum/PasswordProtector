@@ -2,6 +2,7 @@ from ast import literal_eval
 # from encrypt_string import symEncrypt, symDecrypt
 import re
 import os
+import readline
 from dotenv import load_dotenv
 from argon2 import PasswordHasher
 from database_interface import createDatabase, createItem, searchTable
@@ -11,6 +12,17 @@ associated_data = b''
 tag = b'\xaa\xa0\x85\xce\xd5[O\xf2\x14m\x8fO\x19\n\x9c\x0b'
 placeholder = b'\xa02\xbd\x12>\xe3\x92\xe5'
 name_characters = "[^a-zA-Z0-9]"
+
+def input_with_prefill(message, prefill):
+    def hook():
+        readline.insert_text(prefill)
+        readline.redisplay()
+    readline.set_pre_input_hook(hook)
+    try:
+        return input(message)
+    finally:
+        readline.set_pre_input_hook()
+
 def createAccount():
     user_name = ""
     account_name = ""
@@ -24,9 +36,9 @@ def createAccount():
         raw_pass = input()
         while not checkPassword(raw_pass):
             print("The password you have chosen is too common, please choose a different password.")
-            raw_pass = input()
+            raw_pass = input_with_prefill("", raw_pass)
         while not createStrongPassword(raw_pass):
-            raw_pass = input()
+            raw_pass = input_with_prefill("", raw_pass)
         iv, encrypted_pass, tag = encryptPassword(raw_pass.encode('utf-8'), associated_data)
         print("Iv: ", iv)
         print("Tag: ", tag)
@@ -110,9 +122,9 @@ def createMasterPassword():
     raw_pass = input()
     while not checkPassword(raw_pass):
         print("The password you have chosen is too common, please choose a different password.")
-        raw_pass = input()
+        raw_pass = input_with_prefill("", raw_pass)
     while not createStrongPassword(raw_pass):
-        raw_pass = input()
+        raw_pass = input_with_prefill("", raw_pass)
     encrypted_pass = PasswordHasher().hash(raw_pass)
     storePasswords("developer", "master_password", encrypted_pass, developer_mode=True)
 
