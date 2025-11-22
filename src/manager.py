@@ -7,7 +7,7 @@ import readline
 from dotenv import load_dotenv
 from argon2 import PasswordHasher
 from database_interface import createDatabase, createItem, searchTable
-from pass_encryption import encryptPassword, decryptPassword, checkPassword, createStrongPassword
+from pass_encryption import encryptPassword, decryptPassword, checkPassword, createStrongPassword, suggestPassword
 iv = b'6\xc3"\x15\xd8\x16\x80H\xb7\xd6K!'
 associated_data = b''
 tag = b'\xaa\xa0\x85\xce\xd5[O\xf2\x14m\x8fO\x19\n\x9c\x0b'
@@ -33,8 +33,13 @@ def createAccount():
     account_name = input("Please use alphanumeric characters only to create your account name:\n")
     scrubbed_name = re.sub(name_characters, "", account_name)
     if scrubbed_name == account_name:
+        print("Would like a generated password? (y/n):")
+        gen_option= input()
+        generated_password = ""
+        if gen_option.lower() == 'y':
+            generated_password = suggestPassword()
         print(f"Please input a password for {scrubbed_name}'s account: ")
-        raw_pass = input()
+        raw_pass = input_with_prefill("", generated_password)
         while not checkPassword(raw_pass):
             print("The password you have chosen is too common, please choose a different password.")
             raw_pass = input_with_prefill("", raw_pass)
