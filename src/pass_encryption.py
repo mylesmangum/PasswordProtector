@@ -28,7 +28,6 @@ def encryptPassword(raw_password, associated_data=b""):
     # Encrypt the plaintext and get the associated ciphertext.
     # GCM does not require padding.
     ciphertext = encryptor.update(raw_password) + encryptor.finalize()
-    print(ciphertext)
     return (iv, ciphertext, encryptor.tag)
 
 def decryptPassword(associated_data, iv, encrypted_password, tag):

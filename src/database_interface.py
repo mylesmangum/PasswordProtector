@@ -21,7 +21,6 @@ def createItem(user, name, password, iv, tag):
     connection_obj = sqlite3.connect(database_name)
     cursor_obj = connection_obj.cursor()
     my_pass = password
-    print("Password type:", my_pass)
     try:
         new_item = f"""
                     INSERT INTO {user} (Username, Password, IV, Tag) VALUES ("{name}", ?, ?, ?)
@@ -32,7 +31,7 @@ def createItem(user, name, password, iv, tag):
     except Exception as e:
         print("There seems to be an issue with the user you're trying to access.", e)
     finally:
-        print(f"Storing {name}\'s password: {password}")
+        print(f"Storing {name}\'s password: {password}\n")
         connection_obj.commit()
         connection_obj.close()
 
@@ -47,14 +46,11 @@ def searchTable(user):
         cursor_obj.execute(f"""SELECT * FROM {user}""")
         output = cursor_obj.fetchall()
         for row in output:
-            print(row[1])
-            print(type(row[1]))
             data_items.append(row)
     except Exception as e:
         print("There seems to be an issue with the user you're trying to access.", e)
     finally:
         connection_obj.close()
-        # print(data_items)
         return data_items
 
 
@@ -73,5 +69,4 @@ def searchAccounts(user):
         print(e)
     finally:
         connection_obj.close()
-        # print(data_items)
         return data_items

@@ -46,8 +46,6 @@ def createAccount():
         while not createStrongPassword(raw_pass):
             raw_pass = input_with_prefill("", raw_pass)
         iv, encrypted_pass, tag = encryptPassword(raw_pass.encode('utf-8'), associated_data)
-        print("Iv: ", iv)
-        print("Tag: ", tag)
         storePasswords(user_name, scrubbed_name, encrypted_pass, iv, tag)
     else:
         invalidCharacter("name creation")
@@ -73,7 +71,6 @@ def searchAccount():
     for item in password_list:
         print(f"Account: {item[0]}")
         print(f"encrypted Password: {item[1]}")
-        print(type(item[1]))
         print(f"Password: {decryptPassword(associated_data, item[2], item[1], item[3])}")
         print("-----"*10)
 
@@ -138,7 +135,6 @@ def createMasterPassword():
 if __name__ == "__main__":
     load_dotenv()
     mode = "user"
-    print(os.getenv("DEVELOPER_PASSWORD"))
     if not os.getenv("DEVELOPER_PASSWORD"):
         createMasterPassword()
     else:
@@ -155,5 +151,5 @@ if __name__ == "__main__":
             mode = "developer"
         except Exception as e:
             print("Password incorrect... Continuing in user mode.")
-    print("Welcome!")
+    print("Welcome!\n")
     runLoop(mode)
