@@ -1,6 +1,6 @@
 import os
 import random
-import math
+import secrets
 from algorithm import RSA, encrypt_RSA, decrypt_RSA
 from cryptography.hazmat.primitives.ciphers import (
     Cipher, algorithms, modes
@@ -45,7 +45,8 @@ def decryptPassword(associated_data, iv, encrypted_password, tag):
     return decryptor.update(encrypted_password) + decryptor.finalize()
 
 def checkPassword(raw_password):
-    if raw_password == "password123":
+    if raw_password == "password" or raw_password == "password123":
+        print("This password is too common, please choose a different one.")
         return False
     return True
 
@@ -57,22 +58,49 @@ def createStrongPassword(password):
             break
 
     if not any(char.isdigit() for char in password):
-        print("It's recommended you have at least one number in your password")
+        print("You must have at least one number in your password.")
         return False
     elif len(password) <= 7:
-        print("It's recommended you have a password greater than 7 characters")
+        print("It's recommended you have a password greater than 7 characters.")
         return False
     elif not hasSpecialCharacter:
-        print("It's recommended you have at least one special character in your password")
+        print("It's recommended you have at least one special character in your password.")
         return False
-    else:
-        return True
+    elif not any(char.isupper() for char in password):
+        print("You must have at least one uppercase letter in your password.")
+        return False
+    elif not any(char.islower() for char in password):
+        print("You must have at least one lowercase letter in your password.")
+        return False
+    return True
     
-def suggestPassword():
-    acceptable_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[{]}\|;:,<.>/?`~"
-    password= ""
-    for i in range(12):
-        index = math.floor(random.random() * len(acceptable_chars))
-        password += acceptable_chars[index]
-    print("Generated password: [", password, "]")
+def suggestPassword(length=16):
+    # Allowed characters
+    lowercase = "abcdefghijklmnopqrstuvwxyz"
+    uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    digits = "0123456789"
+    specials = "!@#$%^&*()-_=+?.<>" #most commonly accepted special characters
+
+    acceptable_chars = lowercase + uppercase + digits + specials
+
+    # Must include at least one of each required type (common requirement)
+    password_chars = [
+        secrets.choice(lowercase),
+        secrets.choice(uppercase),
+        secrets.choice(digits),
+        secrets.choice(specials)
+    ]
+
+    # Fill the remaining spots with fully random chars
+    for _ in range(length - 4):
+        index = secrets.randbelow(len(acceptable_chars))
+        password_chars.append(acceptable_chars[index])    
+
+    # Shuffle to further prevent predictability
+    random.shuffle(password_chars)
+
+    # Convert list to string
+    password = "".join(password_chars)
+
+    print("Generated password:", password)
     return password
