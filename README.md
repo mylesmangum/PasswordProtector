@@ -4,8 +4,10 @@ Dominic Gordillo, Dylan Edwards, Joe Zink, Myles Mangum, Tyler Whittaker
 
 How to develop a secure program.  This is a programming project for CS-3100 at UVU from Group 9
 # Requirements
-This program was written in Python 3.10, all modules used should be included within Python and not require any outside libraries.
+This program was written in Python 3.10.
 # How to run
+The current project is run through an executable file in the repo.  To launch the project simply execute the file `manager.exe` within the `dist` folder.
+
 Depending on how Python was installed, the usage of python3 or py3 may differ, if you run into any issues try changing the initial command
 1. Start in the base folder of this project and input 
 ```console
