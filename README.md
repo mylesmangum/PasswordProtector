@@ -1,6 +1,6 @@
 # PasswordProtector
 Authors: 
-Dominic Gordillo, Dylan Edwards, Joe Zink, Myles Mangum, Tyler Whittaker
+Dominic Gordillo, Myles Mangum
 
 How to develop a secure program.  This is a programming project for CS-3100 at UVU from Group 9
 # Requirements
