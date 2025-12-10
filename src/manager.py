@@ -33,7 +33,7 @@ def createAccount():
     account_name = input("Please use alphanumeric characters only to create your account name:\n")
     scrubbed_name = re.sub(name_characters, "", account_name)
     if scrubbed_name == account_name:
-        print("Would like a generated password? (y/n):")
+        print("Would you like a generated password? (y/n):")
         gen_option= input()
         generated_password = ""
         if gen_option.lower() == 'y':
@@ -41,7 +41,6 @@ def createAccount():
         print(f"Please input a password for {scrubbed_name}'s account: ")
         raw_pass = input_with_prefill("", generated_password)
         while not checkPassword(raw_pass):
-            print("The password you have chosen is too common, please choose a different password.")
             raw_pass = input_with_prefill("", raw_pass)
         while not createStrongPassword(raw_pass):
             raw_pass = input_with_prefill("", raw_pass)
